@@ -1,4 +1,5 @@
 from multiprocessing import context
+from operator import is_
 from django.http import HttpResponse
 from django.shortcuts import render
 from rest_framework.response import Response
@@ -14,9 +15,17 @@ from .serializers import (
     RegisterSerializer,
     EmailVerificationSerializer,
     InvoiceSerializer,
-    InvoiceDetailsSerializer,
 )
-from .models import Client, Company, Currency, Language, Invoice
+from .models import (
+    Client,
+    Company,
+    Currency,
+    InvoiceDetails,
+    InvoiceSettings,
+    Language,
+    Invoice,
+    InvoiceDiscount,
+)
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -33,6 +42,7 @@ from .serializers import (
     CurrencySerializer,
     LanguageSerializer,
     EmailTemplateSerializer,
+    InvoiceSettingsSerializer,
 )
 from rest_framework_simplejwt.token_blacklist.models import (
     OutstandingToken,
@@ -269,30 +279,48 @@ class clientDetails(RetrieveUpdateDestroyAPIView):
 class invoiceCreateList(ListCreateAPIView):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
+    # authentication_classes = [JWTAuthentication]
+    # permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request):
-        queryset = Invoice.objects.all()
-        serializer = InvoiceSerializer(queryset, many=True)
-        return Response(serializer.data)
+    # def perform_create(self, serializer):
+    #     serializer.save()
 
-    def post(self, request):
-        serializer = InvoiceSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def create(self, request, *args, **kwargs):
+        data = request.data
 
+        # insert invoice data
+        invoice_data = Invoice.objects.create(
+            client=Client.objects.get(id=data["client"]),
+            due_date=data["due_date"],
+            notes=data["notes"],
+            currency=Currency.objects.get(id=data["currency"]),
+            language=Language.objects.get(id=data["language"]),
+        )  # created_by = data["created_by"]
 
-# invoice details
-class invoiceDetailsCreate(CreateAPIView):
-    serializer_class = InvoiceDetailsSerializer
+        invoice_data.save()
 
-    # def post(self, request):
-    #     serializer = InvoiceDetailsSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # invoice items insert
+        for i in range(0, len(data["items"]["description"])):
+            items_data = InvoiceDetails.objects.create(
+                invoice=Invoice.objects.get(id=invoice_data.id),
+                description=data["items"]["description"][i],
+                amount=data["items"]["amount"][i],
+                quantity=data["items"]["quantity"][i],
+            )
+            items_data.save()
+
+        # insert invoice discount
+        invoice_discount_data = InvoiceDiscount.objects.create(
+            invoice=Invoice.objects.get(id=invoice_data.id),
+            type=data["type"],
+            value=data["value"],
+        )
+        invoice_discount_data.save()
+
+        return Response(
+            {"success": "Invoice Created."},
+            status=status.HTTP_200_OK,
+        )
 
 
 # send email template in invoice
@@ -377,3 +405,30 @@ class GenerateInvoice(GenericAPIView):
         #     response = HttpResponse(pdf, content_type="application/pdf")
         #     filename = "invoice_%s.pdf" % (data["invoice_id"])
         #     content = "inline; filename='%s'" % (filename)
+
+
+class invoiceSetttingsUpdate(APIView):
+    def post(self, request, format=None):
+        serializer = InvoiceSettingsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {
+                    "success": "Settings Updated",
+                    "status": "success",
+                    "data": serializer.data,
+                },
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors)
+
+    def get(self, request, format=None):
+        settings_data = InvoiceSettings.objects.all()
+        serializer = InvoiceSettingsSerializer(settings_data, many=True)
+        return Response(
+            {
+                "status": "success",
+                "data": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )

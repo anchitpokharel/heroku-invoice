@@ -9,7 +9,15 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-from .models import Company, Client, Currency, Language, Invoice, InvoiceDetails
+from .models import (
+    Company,
+    Client,
+    Currency,
+    InvoiceSettings,
+    Language,
+    Invoice,
+    InvoiceDetails,
+)
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -216,53 +224,23 @@ class LanguageSerializer(serializers.ModelSerializer):
 
 
 class InvoiceSerializer(serializers.ModelSerializer):
+    # created_by = serializers.ReadOnlyField(source="created_by.id")
+    created_by = serializers.StringRelatedField(
+        default=serializers.CurrentUserDefault(), read_only=True
+    )
+
     class Meta:
         model = Invoice
         fields = [
             "id",
             "due_date",
             "notes",
-            "discount",
-            "tax",
             "client",
             "currency",
             "language",
-            "total_amount",
+            "created_by",
         ]
-        read_only_fields = ("total_amount",)
-
-
-class InvoiceDetailsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = InvoiceDetails
-        fields = ["id", "description", "usd", "quantity", "invoice"]
-
-    def create(self, validated_data):
-        invoice_details = InvoiceDetails.objects.create(
-            description=validated_data["description"],
-            usd=validated_data["usd"],
-            quantity=validated_data["quantity"],
-            invoice=validated_data["invoice"],
-        )
-
-        invoice_details.save()
-
-        # save invoice total amount in invoice model
-        obj = Invoice.objects.get(pk=int(str(invoice_details.invoice)))
-        obj.total_amount += (
-            validated_data["usd"] * validated_data["quantity"]
-        ) - obj.discount
-        obj.save()
-
-        return invoice_details
-        # return Response(
-        #     {
-        #         "status": "ok",
-        #         "message": "Invoice Added Successfully",
-        #         "data": invoice_details,
-        #     },
-        #     status=status.HTTP_201_CREATED,
-        # )
+        # read_only_fields = ("created_by",)
 
 
 class EmailTemplateSerializer(serializers.Serializer):
@@ -271,3 +249,18 @@ class EmailTemplateSerializer(serializers.Serializer):
 
     class Meta:
         fields = ["invoice_id", "client_id"]
+
+
+class InvoiceSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InvoiceSettings
+        fields = [
+            "id",
+            "company_logo",
+            "invoice_color",
+            "currency",
+            "language",
+            "address",
+            "invoice_notes",
+            "notification",
+        ]

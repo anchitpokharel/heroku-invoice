@@ -5,6 +5,9 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from rest_framework_swagger.views import get_swagger_view
 
+from django.conf.urls.static import static
+from django.conf import settings
+
 schema_view = get_swagger_view(title="Invoice System API")
 
 urlpatterns = [
@@ -36,7 +39,6 @@ urlpatterns = [
     path("currency/", views.currencyCreateList.as_view()),
     path("language/", views.languageCreateList.as_view()),
     path("invoiceListCreate/", views.invoiceCreateList.as_view()),
-    path("invoiceDetailsCreate/", views.invoiceDetailsCreate.as_view()),
     path(
         "sendEmailTemplate",
         views.sendEmailTemplate.as_view(),
@@ -45,4 +47,8 @@ urlpatterns = [
         "generateInvoice/<int:pk>",
         views.GenerateInvoice.as_view(),
     ),
-]
+    path(
+        "invoiceSetttingsUpdate/",
+        views.invoiceSetttingsUpdate.as_view(),
+    ),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

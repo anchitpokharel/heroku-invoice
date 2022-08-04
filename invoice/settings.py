@@ -163,3 +163,6 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = "pokharelanchit@gmail.com"  # os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = "mbmurfwtzlrcfmuo"  # os.environ.get("EMAIL_HOST_PASSWORD")
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

@@ -1,5 +1,6 @@
 import email
 from email.policy import default
+from re import M
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -68,9 +69,9 @@ class Invoice(models.Model):
     currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True)
     language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True)
     notes = models.CharField(max_length=255)
-    discount = models.DecimalField(max_digits=5, decimal_places=2, null=True)
-    tax = models.DecimalField(max_digits=5, decimal_places=2, null=True)
-    total_amount = models.DecimalField(max_digits=9, decimal_places=2, default=0.00)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return str(self.id)
@@ -79,8 +80,35 @@ class Invoice(models.Model):
 class InvoiceDetails(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     description = models.CharField(max_length=255, null=False)
-    usd = models.DecimalField(max_digits=9, decimal_places=2)
+    amount = models.DecimalField(max_digits=9, decimal_places=2)
     quantity = models.IntegerField()
 
     def __str__(self):
-        return str(self.invoice)
+        return str(self.id)
+
+
+class InvoiceDiscount(models.Model):
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
+    type = models.CharField(max_length=50, null=False)
+    value = models.IntegerField()
+
+    def __str__(self):
+        return str(self.id)
+
+
+class InvoiceSettings(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    company_logo = models.ImageField(upload_to="logo")
+    invoice_color = models.CharField(max_length=50, null=False)
+    currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True)
+    language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True)
+    address = models.CharField(max_length=255)
+    invoice_notes = models.CharField(max_length=255)
+    # invoice_number =
+    # tax =
+    notification = models.BooleanField()
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.id)
