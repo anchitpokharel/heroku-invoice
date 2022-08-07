@@ -303,12 +303,12 @@ class invoiceCreateList(ListCreateAPIView):
         invoice_data.save()
 
         # invoice items insert
-        for i in range(0, len(data["items"]["description"])):
+        for i in data["items"]:
             items_data = InvoiceDetails.objects.create(
                 invoice=Invoice.objects.get(id=invoice_data.id),
-                description=data["items"]["description"][i],
-                amount=data["items"]["amount"][i],
-                quantity=data["items"]["quantity"][i],
+                description=i["description"],
+                amount=i["amount"],
+                quantity=i["quantity"],
             )
             items_data.save()
 

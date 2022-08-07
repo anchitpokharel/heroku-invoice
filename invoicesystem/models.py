@@ -81,7 +81,7 @@ class Invoice(models.Model):
 class InvoiceDetails(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     description = models.CharField(max_length=255, null=False)
-    amount = models.DecimalField(max_digits=9, decimal_places=2)
+    amount = models.FloatField()
     quantity = models.IntegerField()
 
     def __str__(self):
