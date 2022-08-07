@@ -7,6 +7,7 @@ from rest_framework import permissions
 from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
+    RetrieveDestroyAPIView,
     GenericAPIView,
     CreateAPIView,
 )
@@ -25,6 +26,7 @@ from .models import (
     Language,
     Invoice,
     InvoiceDiscount,
+    Tax,
 )
 from django.contrib.auth import get_user_model
 
@@ -43,6 +45,7 @@ from .serializers import (
     LanguageSerializer,
     EmailTemplateSerializer,
     InvoiceSettingsSerializer,
+    TaxSerializer,
 )
 from rest_framework_simplejwt.token_blacklist.models import (
     OutstandingToken,
@@ -429,6 +432,35 @@ class invoiceSetttingsUpdate(APIView):
             {
                 "status": "success",
                 "data": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+# tax
+class taxCreateList(ListCreateAPIView):
+    queryset = Tax.objects.all()
+    serializer_class = TaxSerializer
+    # authentication_classes = [JWTAuthentication]
+    # permission_classes = [permissions.IsAuthenticated]
+
+
+class taxDetails(RetrieveDestroyAPIView):
+    queryset = Tax.objects.all()
+    serializer_class = TaxSerializer
+    # authentication_classes = [JWTAuthentication]
+    # permission_classes = [permissions.IsAuthenticated]
+
+
+class taxByCompany(GenericAPIView):
+    def get(self, request, id):
+        queryset = Tax.objects.filter(company=id)
+        serializer_class = TaxSerializer
+
+        return Response(
+            {
+                "success": "We have sent you an invoice. Check Your email.",
+                "data": queryset,
             },
             status=status.HTTP_200_OK,
         )

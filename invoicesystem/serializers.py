@@ -17,6 +17,7 @@ from .models import (
     Language,
     Invoice,
     InvoiceDetails,
+    Tax,
 )
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
@@ -262,5 +263,17 @@ class InvoiceSettingsSerializer(serializers.ModelSerializer):
             "language",
             "address",
             "invoice_notes",
+            "tax",
             "notification",
+        ]
+
+
+class TaxSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tax
+        fields = [
+            "id",
+            "label",
+            "value",
+            "company",
         ]

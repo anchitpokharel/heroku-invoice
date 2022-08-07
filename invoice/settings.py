@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
-import django_heroku
+
+# import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,11 +30,11 @@ DEBUG = True
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-ALLOWED_HOSTS = ["192.168.1.64", "127.0.0.1"]
+ALLOWED_HOSTS = ["192.168.1.112", "127.0.0.1"]
 #
 
 CORS_ORIGIN_WHITELIST = [
-    "http://192.168.1.64:8000",
+    "http://192.168.1.112:8000",
     "http://127.0.0.1:8000",
     "http://127.0.0.1",
     "http://localhost:8000",
@@ -144,7 +145,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = "static/"
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

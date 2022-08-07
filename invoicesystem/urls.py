@@ -51,4 +51,16 @@ urlpatterns = [
         "invoiceSetttingsUpdate/",
         views.invoiceSetttingsUpdate.as_view(),
     ),
+    path(
+        "tax/",
+        views.taxCreateList.as_view(),
+    ),
+    path(
+        "tax/<int:pk>",
+        views.taxDetails.as_view(),
+    ),
+    path(
+        "taxCompany/<int:id>",
+        views.taxByCompany.as_view(),
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

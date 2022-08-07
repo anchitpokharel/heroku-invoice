@@ -1,3 +1,4 @@
+from cProfile import label
 import email
 from email.policy import default
 from re import M
@@ -96,6 +97,14 @@ class InvoiceDiscount(models.Model):
         return str(self.id)
 
 
+class Tax(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    label = models.CharField(max_length=127)
+    value = models.IntegerField()
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+
+
 class InvoiceSettings(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     company_logo = models.ImageField(upload_to="logo")
@@ -105,7 +114,7 @@ class InvoiceSettings(models.Model):
     address = models.CharField(max_length=255)
     invoice_notes = models.CharField(max_length=255)
     # invoice_number =
-    # tax =
+    tax = models.ForeignKey(Tax, on_delete=models.SET_NULL, null=True)
     notification = models.BooleanField()
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
