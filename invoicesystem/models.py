@@ -26,7 +26,7 @@ class Company(models.Model):
     email = models.EmailField(max_length=127)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.company_name
@@ -59,6 +59,7 @@ class Client(models.Model):
     language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.full_name
@@ -70,7 +71,7 @@ class Invoice(models.Model):
     currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True)
     language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True)
     notes = models.CharField(max_length=255)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
 
@@ -113,11 +114,17 @@ class InvoiceSettings(models.Model):
     language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True)
     address = models.CharField(max_length=255)
     invoice_notes = models.CharField(max_length=255)
-    # invoice_number =
-    tax = models.ForeignKey(Tax, on_delete=models.SET_NULL, null=True)
+    invoice_number = models.IntegerField()
     notification = models.BooleanField()
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return str(self.id)
+
+
+class UserImage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    image = models.ImageField(upload_to="user")
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)

@@ -10,12 +10,17 @@ from rest_framework.generics import (
     RetrieveDestroyAPIView,
     GenericAPIView,
     CreateAPIView,
+    UpdateAPIView,
+    ListAPIView,
 )
 from rest_framework.views import APIView
 from .serializers import (
     RegisterSerializer,
     EmailVerificationSerializer,
     InvoiceSerializer,
+    ChangeUserPasswordSerializer,
+    ChangeUsernameSerializer,
+    ChangeUserImageSerializer,
 )
 from .models import (
     Client,
@@ -27,6 +32,7 @@ from .models import (
     Invoice,
     InvoiceDiscount,
     Tax,
+    UserImage,
 )
 from django.contrib.auth import get_user_model
 
@@ -236,15 +242,15 @@ class LogoutView(APIView):
 class company(ListCreateAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    # authentication_classes = [JWTAuthentication]
+    # permission_classes = [permissions.IsAuthenticated]
 
 
 class companyDetails(RetrieveUpdateDestroyAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    # authentication_classes = [JWTAuthentication]
+    # permission_classes = [permissions.IsAuthenticated]
 
 
 # currency
@@ -282,13 +288,11 @@ class clientDetails(RetrieveUpdateDestroyAPIView):
 class invoiceCreateList(ListCreateAPIView):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
-    # authentication_classes = [JWTAuthentication]
+    authentication_classes = [JWTAuthentication]
     # permission_classes = [permissions.IsAuthenticated]
 
-    # def perform_create(self, serializer):
-    #     serializer.save()
-
     def create(self, request, *args, **kwargs):
+        user = self.request.user
         data = request.data
 
         # insert invoice data
@@ -298,7 +302,8 @@ class invoiceCreateList(ListCreateAPIView):
             notes=data["notes"],
             currency=Currency.objects.get(id=data["currency"]),
             language=Language.objects.get(id=data["language"]),
-        )  # created_by = data["created_by"]
+            created_by=User.objects.get(id=user.id),
+        )
 
         invoice_data.save()
 
@@ -459,8 +464,103 @@ class taxByCompany(GenericAPIView):
 
         return Response(
             {
-                "success": "We have sent you an invoice. Check Your email.",
                 "data": queryset,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class changeUserPassword(UpdateAPIView):
+    serializer_class = ChangeUserPasswordSerializer
+    model = User
+    authentication_classes = [JWTAuthentication]
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            self.object.set_password(serializer.data.get("password"))
+            self.object.save()
+            response = {
+                "status": "success",
+                "code": status.HTTP_200_OK,
+                "message": "Password updated successfully",
+                "data": [],
+            }
+
+            return Response(response)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class changeUsername(UpdateAPIView):
+    serializer_class = ChangeUsernameSerializer
+    model = User
+    authentication_classes = [JWTAuthentication]
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, *args, **kwargs):
+        user = self.request.user
+        user_data = User.objects.get(id=user.id)
+
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            uname = serializer.data.get("username")
+            splitted_name = uname.split()
+
+            if len(splitted_name) < 2:
+                user_data.first_name = splitted_name[0]
+                last_name = ""
+            elif len(splitted_name) < 3:
+                user_data.first_name = splitted_name[0]
+                last_name = splitted_name[1]
+            else:
+                user_data.first_name = splitted_name[0]
+                last_name = ""
+                for i in range(1, len(splitted_name)):
+                    last_name += " " + splitted_name[i]
+
+            user_data.last_name = last_name
+            user_data.save()
+            response = {
+                "status": "success",
+                "code": status.HTTP_200_OK,
+                "message": "Username updated successfully",
+            }
+
+            return Response(response)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class changeUserImage(ListCreateAPIView):
+    queryset = UserImage.objects.all()
+    serializer_class = ChangeUserImageSerializer
+    authentication_classes = [JWTAuthentication]
+    # permission_classes = [permissions.IsAuthenticated]
+
+
+class getClientByUser(ListAPIView):
+    serializer_class = ClientSerializer
+    model = Client
+    authentication_classes = [JWTAuthentication]
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        queryset = Client.objects.filter(user=self.request.user)
+        serializer = ClientSerializer(queryset, many=True)
+        return Response(
+            {
+                "status": "success",
+                "data": serializer.data,
             },
             status=status.HTTP_200_OK,
         )

@@ -18,6 +18,7 @@ from .models import (
     Invoice,
     InvoiceDetails,
     Tax,
+    UserImage,
 )
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
@@ -203,6 +204,7 @@ class ClientSerializer(serializers.ModelSerializer):
             "address",
             "currency",
             "language",
+            "user",
         ]
 
 
@@ -225,11 +227,6 @@ class LanguageSerializer(serializers.ModelSerializer):
 
 
 class InvoiceSerializer(serializers.ModelSerializer):
-    # created_by = serializers.ReadOnlyField(source="created_by.id")
-    created_by = serializers.StringRelatedField(
-        default=serializers.CurrentUserDefault(), read_only=True
-    )
-
     class Meta:
         model = Invoice
         fields = [
@@ -239,9 +236,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
             "client",
             "currency",
             "language",
-            "created_by",
         ]
-        # read_only_fields = ("created_by",)
 
 
 class EmailTemplateSerializer(serializers.Serializer):
@@ -263,7 +258,7 @@ class InvoiceSettingsSerializer(serializers.ModelSerializer):
             "language",
             "address",
             "invoice_notes",
-            "tax",
+            "invoice_number",
             "notification",
         ]
 
@@ -277,3 +272,43 @@ class TaxSerializer(serializers.ModelSerializer):
             "value",
             "company",
         ]
+
+
+class ChangeUserPasswordSerializer(serializers.Serializer):
+    class Meta:
+        model = User
+
+    password = serializers.CharField(required=True)
+
+
+class ChangeUsernameSerializer(serializers.Serializer):
+    class Meta:
+        model = User
+
+    username = serializers.CharField(required=True)
+
+
+class ChangeUserImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserImage
+        fields = [
+            "id",
+            "image",
+            "user",
+        ]
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+
+        obj, created = UserImage.objects.update_or_create(
+            user=User.objects.get(id=user.id),
+            defaults={"image": validated_data["image"]},  # serializer.data.get("image")
+        )
+
+        # response = {
+        #     "status": "success",
+        #     "code": status.HTTP_200_OK,
+        #     "message": "User Image updated successfully",
+        # }
+
+        return obj

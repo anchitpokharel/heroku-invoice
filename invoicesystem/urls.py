@@ -63,4 +63,20 @@ urlpatterns = [
         "taxCompany/<int:id>",
         views.taxByCompany.as_view(),
     ),
+    path(
+        "changeUserPassword/",
+        views.changeUserPassword.as_view(),
+    ),
+    path(
+        "changeUsername/",
+        views.changeUsername.as_view(),
+    ),
+    path(
+        "changeUserImage/",
+        views.changeUserImage.as_view(),
+    ),
+    path(
+        "getClientByUser/",
+        views.getClientByUser.as_view(),
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
