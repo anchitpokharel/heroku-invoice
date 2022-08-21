@@ -87,14 +87,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data["password"])
         user.save()
 
-        save company in company table while registering new user
+        # save company in company table while registering new user
         company = Company.objects.create(
             user=User.objects.get(email=user.email),
             company_name=validated_data["company_name"],
         )
         company.save()
 
-        email verification
+        # email verification
         user_data = User.objects.get(email=user.email)
         token = RefreshToken.for_user(user_data).access_token
 
