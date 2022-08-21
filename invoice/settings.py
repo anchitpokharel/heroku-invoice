@@ -101,10 +101,10 @@ WSGI_APPLICATION = "invoice.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "herokuinvoice",
-        "USER": "postgres",
-        "PASSWORD": "845163",
-        "HOST": "localhost",
+        "NAME": "d1fl2q16eolf0u",
+        "USER": "gxyejwmiihzpur",
+        "PASSWORD": "425b5b13831c2b582db73eea07d5472732569e0c07e5da14d0decccd4254be2f",
+        "HOST": "ec2-44-206-137-96.compute-1.amazonaws.com",
         "PORT": "5432",
     }
 }
