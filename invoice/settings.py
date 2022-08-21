@@ -101,9 +101,9 @@ WSGI_APPLICATION = "invoice.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "invoice",
+        "NAME": "herokuinvoice",
         "USER": "postgres",
-        "PASSWORD": "pgadmin",
+        "PASSWORD": "845163",
         "HOST": "localhost",
         "PORT": "5432",
     }
@@ -147,6 +147,8 @@ USE_TZ = True
 STATIC_URL = "static/"
 # django_heroku.settings(locals())
 
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
