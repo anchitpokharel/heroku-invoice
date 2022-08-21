@@ -1,3 +1,3 @@
-web: gunicorn invoicesystem2.wsgi:application --log-file - --log-level debug
+web: gunicorn invoice.wsgi:application --log-file - --log-level debug
 python manage.py collectstatic --noinput
 manage.py migrate
