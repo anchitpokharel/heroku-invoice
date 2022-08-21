@@ -87,34 +87,34 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data["password"])
         user.save()
 
-        # save company in company table while registering new user
-        # company = Company.objects.create(
-        #     user=User.objects.get(email=user.email),
-        #     company_name=validated_data["company_name"],
-        # )
-        # company.save()
+        save company in company table while registering new user
+        company = Company.objects.create(
+            user=User.objects.get(email=user.email),
+            company_name=validated_data["company_name"],
+        )
+        company.save()
 
-        # email verification
-        # user_data = User.objects.get(email=user.email)
-        # token = RefreshToken.for_user(user_data).access_token
+        email verification
+        user_data = User.objects.get(email=user.email)
+        token = RefreshToken.for_user(user_data).access_token
 
-        # current_site = "127.0.0.1:8000"  # get_current_site(request).domain
-        # relativeLink = reverse("email-verify")
+        current_site = "127.0.0.1:8000"  # get_current_site(request).domain
+        relativeLink = reverse("email-verify")
 
-        # absurl = "http://" + current_site + relativeLink + "?token=" + str(token)
-        # email_body = (
-        #     "Hi "
-        #     + user_data.first_name
-        #     + ", Click the below link to verify your email.\n"
-        #     + absurl
-        # )
-        # data = {
-        #     "email_body": email_body,
-        #     "email_subject": "Verify your email address",
-        #     "to_email": user_data.email,
-        # }
+        absurl = "http://" + current_site + relativeLink + "?token=" + str(token)
+        email_body = (
+            "Hi "
+            + user_data.first_name
+            + ", Click the below link to verify your email.\n"
+            + absurl
+        )
+        data = {
+            "email_body": email_body,
+            "email_subject": "Verify your email address",
+            "to_email": user_data.email,
+        }
 
-        # Util.send_email(data)
+        Util.send_email(data)
 
         return user
         # return Response(
