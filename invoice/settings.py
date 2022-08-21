@@ -30,7 +30,7 @@ DEBUG = True
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-ALLOWED_HOSTS = ["192.168.1.112", "127.0.0.1"]
+ALLOWED_HOSTS = ['invoicesystem2.herokuapp.com']
 #
 
 CORS_ORIGIN_WHITELIST = [
