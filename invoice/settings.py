@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
-
+import stripe
 # import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -171,3 +171,4 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+stripe.api_key = "sk_test_51L51FaBVPrH7cu16xPwSBy7ryQp0yq74ygXxxxVc53VblbL55OIXIj7hrkzmmNi5TJVqZi4iP227Zvg7JXZijCac00qni6X495"

@@ -415,7 +415,8 @@ class GenerateInvoice(GenericAPIView):
         #     content = "inline; filename='%s'" % (filename)
 
 
-class invoiceSetttingsUpdate(APIView):
+class invoiceSetttingsUpdate(ListCreateAPIView):
+    serializer_class = InvoiceSettingsSerializer
     def post(self, request, format=None):
         serializer = InvoiceSettingsSerializer(data=request.data)
         if serializer.is_valid():
