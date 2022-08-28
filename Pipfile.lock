@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "88835fb8c9f6f7857fd8873b7584e328fe738147e5d99e6cd41b0c7e9f732de5"
+            "sha256": "9698abb478b68dc751fe4dacd3dbe362fb309734b2def72b5a7ea965e1bb0a67"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -699,6 +699,7 @@
                 "sha256:8fefa2a1a1365bf5520aac41836fbee479da67864514bdb821f31ce07ce65349"
             ],
             "index": "pypi",
+            "markers": "python_version >= '3.0'",
             "version": "==2.28.1"
         },
         "ruamel.yaml": {
@@ -827,6 +828,14 @@
             ],
             "index": "pypi",
             "version": "==0.4.2"
+        },
+        "stripe": {
+            "hashes": [
+                "sha256:5da32614298eed81cf1945634b0ec4e2edb7cf2d1da3a1a68281e4c211d10661",
+                "sha256:852aca93f2eeeab5823d2acf4a5bedb25f946fa10cea595a5b597d0748f1365f"
+            ],
+            "index": "pypi",
+            "version": "==4.1.0"
         },
         "svglib": {
             "hashes": [

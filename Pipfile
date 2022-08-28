@@ -18,7 +18,7 @@ django-rest-swagger = "==2.2.0"
 djangorestframework = "==3.13.1"
 djangorestframework-simplejwt = "==5.2.0"
 drf-yasg = "==1.20.0"
-gunicorn = "*"
+gunicorn = "==20.1.0"
 idna = "==3.3"
 inflection = "==0.5.1"
 itypes = "==1.2.0"
@@ -38,6 +38,7 @@ uritemplate = "==4.1.1"
 urllib3 = "==1.26.10"
 whitenoise = "==6.2.0"
 xhtml2pdf = "==0.2.8"
+stripe = "*"
 
 [dev-packages]
 
